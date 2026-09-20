@@ -65,7 +65,7 @@ app.post('/signup', async (req, res) => {
     if (tokenError) throw tokenError;
 
        // 7. Send verification email
-    const verificationLink = `{process.env.BACKEND_URL}/verify?token=${token}`;
+    const verificationLink = `{BACKEND_URL}/verify?token=${token}`;
     await sendVerificationEmail(email, verificationLink);
 
     res.status(201).json({

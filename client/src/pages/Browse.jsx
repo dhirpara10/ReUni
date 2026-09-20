@@ -18,8 +18,8 @@ function Browse() {
     setError('');
     try {
       const url = category === 'All'
-        ? '{process.env.BACKEND_URL}/items'
-        : `{process.env.BACKEND_URL}/items?category=${category}`;
+        ? '{BACKEND_URL}/items'
+        : `{BACKEND_URL}/items?category=${category}`;
 
       const res = await fetch(url);
       const data = await res.json();

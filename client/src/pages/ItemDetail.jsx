@@ -57,7 +57,7 @@ function ItemDetail() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/items/${id}`);
+      const res = await fetch(`{BACKEND_URL}/items/${id}`);
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Item not found.');
@@ -74,7 +74,7 @@ function ItemDetail() {
   // For sellers: find any buyer who has messaged about this item
   const fetchAllConversationsForSeller = async () => {
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/inbox/${user.id}`);
+      const res = await fetch(`{BACKEND_URL}/inbox/${user.id}`);
       const data = await res.json();
       if (res.ok) {
         const relatedMsg = data.messages.find(m => m.item_id === id);
@@ -90,7 +90,7 @@ function ItemDetail() {
 
   const fetchMessages = async (partyId) => {
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/messages/${id}/${user.id}/${partyId}`);
+      const res = await fetch(`{BACKEND_URL}/messages/${id}/${user.id}/${partyId}`);
       const data = await res.json();
       if (res.ok) setMessages(data.messages);
     } catch (err) {
@@ -104,7 +104,7 @@ function ItemDetail() {
 
     setSending(true);
     try {
-      const res = await fetch('{process.env.BACKEND_URL}/messages', {
+      const res = await fetch('{BACKEND_URL}/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

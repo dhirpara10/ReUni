@@ -19,7 +19,7 @@ function Wishlist() {
   const fetchWishlist = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/wishlist/${user.id}`);
+      const res = await fetch(`{BACKEND_URL}/wishlist/${user.id}`);
       const data = await res.json();
       if (res.ok) setWishlist(data.wishlist);
     } catch (err) {
@@ -35,7 +35,7 @@ function Wishlist() {
     if (!keyword.trim()) return;
 
     try {
-      const res = await fetch('{process.env.BACKEND_URL}/wishlist', {
+      const res = await fetch('{BACKEND_URL}/wishlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, keyword, category })
@@ -55,7 +55,7 @@ function Wishlist() {
 
   const handleRemove = async (id) => {
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/wishlist/${id}`, { method: 'DELETE' });
+      const res = await fetch(`{BACKEND_URL}/wishlist/${id}`, { method: 'DELETE' });
       if (res.ok) fetchWishlist();
     } catch (err) {
       console.error(err);

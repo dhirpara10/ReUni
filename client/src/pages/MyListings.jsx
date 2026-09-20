@@ -18,7 +18,7 @@ function MyListings() {
   const fetchMyItems = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/items/seller/${user.id}`);
+      const res = await fetch(`{BACKEND_URL}/items/seller/${user.id}`);
       const data = await res.json();
       if (res.ok) {
         setItems(data.items);
@@ -35,7 +35,7 @@ function MyListings() {
   const handleStatusChange = async (itemId, newStatus) => {
     setActionMessage('');
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/items/${itemId}`, {
+      const res = await fetch(`{BACKEND_URL}/items/${itemId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: user.id, status: newStatus })
@@ -56,7 +56,7 @@ function MyListings() {
 
     setActionMessage('');
     try {
-      const res = await fetch(`{process.env.BACKEND_URL}/items/${itemId}`, {
+      const res = await fetch(`{BACKEND_URL}/items/${itemId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: user.id })
