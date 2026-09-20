@@ -1,9 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import env from '../.env';
-
-const BACKEND_URL = env.BACKEND_URL;
-const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
+import { BACKEND_URL } from '../config';const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 
 function Wishlist() {
   const user = JSON.parse(localStorage.getItem('reuni_user'));

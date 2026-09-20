@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import env from '../.env';
-
-const BACKEND_URL = env.BACKEND_URL;
-
+import { BACKEND_URL } from '../config';
 function Inbox() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('reuni_user'));

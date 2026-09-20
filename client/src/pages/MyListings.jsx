@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import StatusBadge from '../components/StatusBadge';
-import env from '../.env';
-
-const BACKEND_URL = env.BACKEND_URL;
-
+import { BACKEND_URL } from '../config';
 
 function MyListings() {
   const navigate = useNavigate();

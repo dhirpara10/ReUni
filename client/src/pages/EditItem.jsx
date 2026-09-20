@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
-import env from '../.env';
-
-const BACKEND_URL = env.BACKEND_URL;
-
+import { BACKEND_URL } from '../config';
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 const CONDITIONS = ['New', 'Good', 'Fair', 'Worn'];
 const EXCHANGE_TYPES = ['Sell', 'Swap', 'Giveaway'];

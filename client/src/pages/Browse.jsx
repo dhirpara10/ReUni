@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import env from '../.env';
-
-const BACKEND_URL = env.BACKEND_URL;
-
+import { BACKEND_URL } from '../config';
 const CATEGORIES = ['All', 'Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 
 function Browse() {
