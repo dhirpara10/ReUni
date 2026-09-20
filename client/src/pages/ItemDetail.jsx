@@ -49,7 +49,6 @@ function ItemDetail() {
     }
   }, [otherPartyId]);
 
-  // Polling: refresh messages every 3 seconds while this page is open
   useEffect(() => {
     if (!otherPartyId) return;
 
@@ -78,7 +77,6 @@ function ItemDetail() {
     }
   };
 
-  // For sellers: find any buyer who has messaged about this item
   const fetchAllConversationsForSeller = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/inbox/${user.id}`);
@@ -158,15 +156,9 @@ function ItemDetail() {
         </h2>
         <p className="msg" style={{ marginTop: 0 }}>{item.category} · {item.condition}</p>
         <p style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px' }}>
-          {item.exchange_type === 'Sell' ? (
-            <span className={`badge ${EXCHANGE_BADGE[item.exchange_type]}`} style={{ fontSize: '16px', padding: '4px 12px' }}>
-              ${item.price}
-            </span>
-          ) : (
-            <span className={`badge ${EXCHANGE_BADGE[item.exchange_type]}`} style={{ fontSize: '16px', padding: '4px 12px' }}>
-              {item.exchange_type}
-            </span>
-          )}
+          <span className={`badge ${EXCHANGE_BADGE[item.exchange_type]}`} style={{ fontSize: '16px', padding: '4px 12px' }}>
+            {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
+          </span>
         </p>
         <p>{item.description}</p>
         <p className="msg">
@@ -195,12 +187,7 @@ function ItemDetail() {
         <div>
           <h3>{isOwnItem ? 'Conversation' : 'Message Seller'}</h3>
 
-          <div className="card" style={{
-            height: '220px',
-            overflowY: 'auto',
-            marginBottom: '12px',
-            padding: '14px'
-          }}>
+          <div className="card" style={{ height: '220px', overflowY: 'auto', marginBottom: '12px', padding: '14px' }}>
             {messages.length === 0 && <p className="msg" style={{ marginTop: 0 }}>No messages yet. Say hello!</p>}
             {messages.map((msg) => (
               <div key={msg.id} style={{ textAlign: msg.sender_id === user.id ? 'right' : 'left', marginBottom: '8px' }}>
@@ -239,4 +226,4 @@ function ItemDetail() {
   );
 }
 
-export default ItemDetail;import { useState, useEffect } from 'react';
+export default ItemDetail;
