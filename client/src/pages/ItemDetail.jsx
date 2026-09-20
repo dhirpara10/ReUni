@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import StatusBadge from '../components/StatusBadge';
+import env from '../.env';
+
+const BACKEND_URL = env.BACKEND_URL;
 
 function ItemDetail() {
   const { id } = useParams();

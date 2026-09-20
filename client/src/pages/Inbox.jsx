@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
+import env from '../.env';
+
+const BACKEND_URL = env.BACKEND_URL;
 
 function Inbox() {
   const navigate = useNavigate();

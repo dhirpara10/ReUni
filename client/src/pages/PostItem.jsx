@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import  supabase  from '../supabaseClient';
+import env from '../.env';
+
+const BACKEND_URL = env.BACKEND_URL;
 
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 const CONDITIONS = ['New', 'Good', 'Fair', 'Worn'];

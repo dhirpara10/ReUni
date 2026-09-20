@@ -4,6 +4,8 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const sendVerificationEmail = require('./mailer');
+import env from '../client/src/.env';
+const BACKEND_URL = env.BACKEND_URL;
 
 
 const app = express();

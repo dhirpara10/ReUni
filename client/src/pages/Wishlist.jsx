@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
+import env from '../.env';
 
+const BACKEND_URL = env.BACKEND_URL;
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 
 function Wishlist() {

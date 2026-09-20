@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import env from '../.env';
+
+const BACKEND_URL = env.BACKEND_URL;
 
 function Signup() {
   const [formData, setFormData] = useState({
