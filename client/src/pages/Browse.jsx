@@ -18,7 +18,7 @@ function Browse() {
     setError('');
     try {
       const url = category === 'All'
-        ? '{BACKEND_URL}/items'
+        ? `${BACKEND_URL}/items`
         : `{BACKEND_URL}/items?category=${category}`;
 
       const res = await fetch(url);

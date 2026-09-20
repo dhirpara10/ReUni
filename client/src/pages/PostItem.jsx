@@ -76,7 +76,7 @@ function PostItem() {
         }
       }
 
-      const res = await fetch('{BACKEND_URL}/items', {
+      const res = await fetch(`${BACKEND_URL}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

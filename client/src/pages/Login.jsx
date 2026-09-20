@@ -15,7 +15,7 @@ function Login() {
     setMessage('');
 
     try {
-      const res = await fetch('{BACKEND_URL}/login', {
+      const res = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

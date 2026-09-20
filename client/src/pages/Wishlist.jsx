@@ -34,7 +34,7 @@ function Wishlist() {
     if (!keyword.trim()) return;
 
     try {
-      const res = await fetch('{BACKEND_URL}/wishlist', {
+      const res = await fetch(`${BACKEND_URL}/wishlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, keyword, category })
