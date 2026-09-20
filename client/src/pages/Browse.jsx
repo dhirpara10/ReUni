@@ -18,8 +18,8 @@ function Browse() {
     setError('');
     try {
       const url = category === 'All'
-        ? 'http://localhost:5001/items'
-        : `http://localhost:5001/items?category=${category}`;
+        ? '{process.env.BACKEND_URL}/items'
+        : `{process.env.BACKEND_URL}/items?category=${category}`;
 
       const res = await fetch(url);
       const data = await res.json();

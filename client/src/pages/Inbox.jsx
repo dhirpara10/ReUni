@@ -19,7 +19,7 @@ function Inbox() {
 
   const fetchInbox = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/inbox/${user.id}`);
+      const res = await fetch(`{process.env.BACKEND_URL}/inbox/${user.id}`);
       const data = await res.json();
 
       if (!res.ok) {
