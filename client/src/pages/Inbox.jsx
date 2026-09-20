@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../config';
+
 function Inbox() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('reuni_user'));
@@ -19,7 +20,7 @@ function Inbox() {
 
   const fetchInbox = async () => {
     try {
-      const res = await fetch(`{BACKEND_URL}/inbox/${user.id}`);
+      const res = await fetch(`${BACKEND_URL}/inbox/${user.id}`);
       const data = await res.json();
 
       if (!res.ok) {
@@ -66,44 +67,42 @@ function Inbox() {
 
   if (!user) {
     return (
-      <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <div className="page" style={{ textAlign: 'center' }}>
         <p>Please <a href="/login">log in</a> to view your inbox.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div className="page">
       <h2>Inbox</h2>
 
-      {loading && <p>Loading conversations...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && conversations.length === 0 && <p style={{ color: '#666' }}>No conversations yet.</p>}
+      {loading && <p className="msg">Loading conversations...</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {!loading && conversations.length === 0 && <p className="msg">No conversations yet.</p>}
 
       <div>
         {conversations.map((conv) => (
           <div
             key={`${conv.itemId}_${conv.otherPartyId}`}
             onClick={() => navigate(`/items/${conv.itemId}?with=${conv.otherPartyId}`)}
+            className="card"
             style={{
-              border: '1px solid #eee',
-              borderRadius: '8px',
-              padding: '14px',
+              padding: '14px 16px',
               marginBottom: '10px',
-              cursor: 'pointer',
-              backgroundColor: '#fafafa'
+              cursor: 'pointer'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <strong>{conv.itemTitle}</strong>
-              <span style={{ fontSize: '12px', color: '#999' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                 {new Date(conv.created_at).toLocaleString()}
               </span>
             </div>
-            <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#666' }}>
+            <p className="msg" style={{ margin: '4px 0 0 0' }}>
               With {conv.otherPartyName}
             </p>
-            <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#333' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '14px' }}>
               {conv.lastMessage.length > 60 ? conv.lastMessage.slice(0, 60) + '…' : conv.lastMessage}
             </p>
           </div>

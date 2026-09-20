@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BACKEND_URL } from '../config';
+
 const CATEGORIES = ['All', 'Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
+
+const EXCHANGE_STYLE = {
+  Sell: { border: 'var(--accent-sell)', badge: 'badge-sell' },
+  Swap: { border: 'var(--accent-swap)', badge: 'badge-swap' },
+  Giveaway: { border: 'var(--accent-give)', badge: 'badge-give' }
+};
 
 function Browse() {
   const [items, setItems] = useState([]);
@@ -19,7 +26,7 @@ function Browse() {
     try {
       const url = category === 'All'
         ? `${BACKEND_URL}/items`
-        : `{BACKEND_URL}/items?category=${category}`;
+        : `${BACKEND_URL}/items?category=${category}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -37,23 +44,21 @@ function Browse() {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div className="page-wide">
       <h2>Browse Items</h2>
 
-      {/* Category filter buttons */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
+            className="btn"
             style={{
-              marginRight: '8px',
-              padding: '8px 14px',
-              backgroundColor: category === cat ? '#333' : '#eee',
-              color: category === cat ? '#fff' : '#333',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer'
+              padding: '7px 14px',
+              fontSize: '13px',
+              backgroundColor: category === cat ? 'var(--text)' : 'var(--surface)',
+              color: category === cat ? 'var(--bg)' : 'var(--text)',
+              borderColor: category === cat ? 'var(--text)' : 'var(--border)'
             }}
           >
             {cat}
@@ -61,54 +66,60 @@ function Browse() {
         ))}
       </div>
 
-      {loading && <p>Loading items...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && items.length === 0 && <p>No items found in this category.</p>}
+      {loading && <p className="msg">Loading items...</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {!loading && items.length === 0 && <p className="msg">No items found in this category.</p>}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-        {items.map((item) => (
-          <Link
-            to={`/items/${item.id}`}
-            key={item.id}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              textDecoration: 'none',
-              color: 'inherit',
-              display: 'block'
-            }}
-          >
-            <div style={{
-              width: '100%',
-              height: '140px',
-              backgroundColor: '#f0f0f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              overflow: 'hidden'
-            }}>
-              {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                <span style={{ fontSize: '12px', color: '#aaa' }}>No image</span>
-              )}
-            </div>
+        {items.map((item) => {
+          const style = EXCHANGE_STYLE[item.exchange_type] || EXCHANGE_STYLE.Sell;
+          return (
+            <Link
+              to={`/items/${item.id}`}
+              key={item.id}
+              className="card"
+              style={{
+                padding: 0,
+                overflow: 'hidden',
+                textDecoration: 'none',
+                color: 'inherit',
+                display: 'block',
+                borderLeft: `3px solid ${style.border}`
+              }}
+            >
+              <div style={{
+                width: '100%',
+                height: '140px',
+                backgroundColor: 'var(--bg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden'
+              }}>
+                {item.image_url ? (
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>No image</span>
+                )}
+              </div>
 
-            <div style={{ padding: '14px' }}>
-              <h4 style={{ margin: '0 0 6px 0' }}>{item.title}</h4>
-              <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#666' }}>{item.category} · {item.condition}</p>
-              <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>
-                {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
-              </p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#999' }}>Posted by {item.users?.full_name}</p>
-            </div>
-          </Link>
-        ))}
+              <div style={{ padding: '14px' }}>
+                <h4 style={{ margin: '0 0 6px 0' }}>{item.title}</h4>
+                <p className="msg" style={{ margin: '0 0 8px 0' }}>{item.category} · {item.condition}</p>
+                <span className={`badge ${style.badge}`}>
+                  {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
+                </span>
+                <p style={{ margin: '10px 0 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Posted by {item.users?.full_name}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

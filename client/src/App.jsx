@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -12,6 +12,7 @@ import EditItem from './pages/EditItem';
 
 function Nav() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -25,27 +26,45 @@ function Nav() {
     navigate('/login');
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <nav style={{ padding: '20px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-      <Link to="/browse" style={{ marginRight: '20px' }}>Browse Items</Link>
-      {user && <Link to="/post" style={{ marginRight: '20px' }}>Post Item</Link>}
-      {user && <Link to="/wishlist" style={{ marginRight: '20px' }}>Wishlist</Link>}
-      {user && <Link to="/inbox" style={{ marginRight: '20px' }}>Inbox</Link>}
+    <nav className="nav">
+      <div className="nav-left">
+        <Link to="/browse" className="nav-brand">ReUni</Link>
+        <Link to="/browse" className={`nav-link ${isActive('/browse') ? 'active' : ''}`}>Browse</Link>
+        {user && (
+          <Link to="/wishlist" className={`nav-link ${isActive('/wishlist') ? 'active' : ''}`}>Wishlist</Link>
+        )}
+        {user && (
+          <Link to="/inbox" className={`nav-link ${isActive('/inbox') ? 'active' : ''}`}>Inbox</Link>
+        )}
+        {user && (
+          <Link to="/my-listings" className={`nav-link ${isActive('/my-listings') ? 'active' : ''}`}>My Listings</Link>
+        )}
+      </div>
 
-      {!user && (
-        <>
-          <Link to="/signup" style={{ marginRight: '20px' }}>Sign Up</Link>
-          <Link to="/login">Log In</Link>
-        </>
-      )}
-      {user && <Link to="/my-listings" style={{ marginRight: '20px' }}>My Listings</Link>}
+      <div className="nav-right">
+        {user && (
+          <Link to="/post" className="btn btn-primary" style={{ fontSize: '13px', padding: '8px 14px' }}>
+            Post Item
+          </Link>
+        )}
 
-      {user && (
-        <>
-          <span style={{ marginRight: '20px' }}>Hi, {user.full_name}</span>
-          <button onClick={handleLogout} style={{ cursor: 'pointer' }}>Log Out</button>
-        </>
-      )}
+        {!user && (
+          <>
+            <Link to="/signup" className="nav-link">Sign Up</Link>
+            <Link to="/login" className="nav-link">Log In</Link>
+          </>
+        )}
+
+        {user && (
+          <>
+            <span className="nav-greeting">Hi, {user.full_name}</span>
+            <button onClick={handleLogout} className="btn">Log Out</button>
+          </>
+        )}
+      </div>
     </nav>
   );
 }

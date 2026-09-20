@@ -19,7 +19,7 @@ function MyListings() {
   const fetchMyItems = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`{BACKEND_URL}/items/seller/${user.id}`);
+      const res = await fetch(`${BACKEND_URL}/items/seller/${user.id}`);
       const data = await res.json();
       if (res.ok) {
         setItems(data.items);
@@ -36,7 +36,7 @@ function MyListings() {
   const handleStatusChange = async (itemId, newStatus) => {
     setActionMessage('');
     try {
-      const res = await fetch(`{BACKEND_URL}/items/${itemId}`, {
+      const res = await fetch(`${BACKEND_URL}/items/${itemId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: user.id, status: newStatus })
@@ -57,7 +57,7 @@ function MyListings() {
 
     setActionMessage('');
     try {
-      const res = await fetch(`{BACKEND_URL}/items/${itemId}`, {
+      const res = await fetch(`${BACKEND_URL}/items/${itemId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: user.id })
@@ -75,40 +75,39 @@ function MyListings() {
 
   if (!user) {
     return (
-      <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <div className="page" style={{ textAlign: 'center' }}>
         <p>Please <a href="/login">log in</a> to view your listings.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '700px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div className="page-wide">
       <h2>My Listings</h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {actionMessage && <p style={{ color: 'red' }}>{actionMessage}</p>}
-      {!loading && items.length === 0 && <p style={{ color: '#666' }}>You haven't posted anything yet.</p>}
+      {loading && <p className="msg">Loading...</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+      {actionMessage && <p className="msg msg-error">{actionMessage}</p>}
+      {!loading && items.length === 0 && <p className="msg">You haven't posted anything yet.</p>}
 
       {items.map((item) => (
         <div
           key={item.id}
+          className="card"
           style={{
-            border: '1px solid #eee',
-            borderRadius: '8px',
-            padding: '14px',
-            marginBottom: '12px',
             display: 'flex',
-            gap: '14px',
-            alignItems: 'flex-start'
+            gap: '16px',
+            alignItems: 'flex-start',
+            marginBottom: '12px'
           }}
         >
           <div style={{
             width: '80px',
             height: '80px',
             flexShrink: 0,
-            backgroundColor: '#f0f0f0',
-            borderRadius: '6px',
+            backgroundColor: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)',
             overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
@@ -117,7 +116,7 @@ function MyListings() {
             {item.image_url ? (
               <img src={item.image_url} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span style={{ fontSize: '10px', color: '#aaa' }}>No image</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>No image</span>
             )}
           </div>
 
@@ -126,41 +125,38 @@ function MyListings() {
               <strong>{item.title}</strong>
               <StatusBadge status={item.status} />
             </div>
-            <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#666' }}>
+            <p className="msg" style={{ marginTop: 0, marginBottom: '10px' }}>
               {item.category} · {item.condition} ·{' '}
               {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
             </p>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button onClick={() => navigate(`/items/${item.id}/edit`)} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+              <button onClick={() => navigate(`/items/${item.id}/edit`)} className="btn">
                 Edit
               </button>
 
               {item.status === 'Available' && (
                 <>
-                  <button onClick={() => handleStatusChange(item.id, 'Sold')} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+                  <button onClick={() => handleStatusChange(item.id, 'Sold')} className="btn">
                     Mark as Sold
                   </button>
-                  <button onClick={() => handleStatusChange(item.id, 'Given Away')} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+                  <button onClick={() => handleStatusChange(item.id, 'Given Away')} className="btn">
                     Mark as Given Away
                   </button>
                 </>
               )}
 
               {item.status !== 'Available' && (
-                <button onClick={() => handleStatusChange(item.id, 'Available')} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+                <button onClick={() => handleStatusChange(item.id, 'Available')} className="btn">
                   Relist as Available
                 </button>
               )}
 
-              <button
-                onClick={() => handleDelete(item.id)}
-                style={{ padding: '6px 12px', cursor: 'pointer', color: '#c0392b' }}
-              >
+              <button onClick={() => handleDelete(item.id)} className="btn btn-danger">
                 Delete
               </button>
 
-              <Link to={`/items/${item.id}`} style={{ padding: '6px 12px', alignSelf: 'center', fontSize: '13px' }}>
+              <Link to={`/items/${item.id}`} className="nav-link" style={{ alignSelf: 'center', fontSize: '13px' }}>
                 View
               </Link>
             </div>

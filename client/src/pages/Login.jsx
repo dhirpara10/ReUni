@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BACKEND_URL } from '../config';
+
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
@@ -23,12 +24,12 @@ function Login() {
 
       const data = await res.json();
 
-            if (!res.ok) {
+      if (!res.ok) {
         setMessage(data.error || 'Something went wrong.');
       } else {
         setMessage(`Welcome back, ${data.user.full_name}!`);
         localStorage.setItem('reuni_user', JSON.stringify(data.user));
-        window.location.href = '/browse'; // redirect to browse page after login
+        window.location.href = '/browse';
       }
     } catch (err) {
       setMessage('Could not reach the server.');
@@ -38,39 +39,43 @@ function Login() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+    <div className="page">
       <h2>Log in to ReUni</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '12px' }}>
-          <label>University Email</label><br />
+      <form onSubmit={handleSubmit} className="card">
+        <div className="field">
+          <label>University Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Password</label><br />
+        <div className="field">
+          <label>Password</label>
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px' }}>
+        <button type="submit" disabled={loading} className="btn btn-primary">
           {loading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '15px' }}>{message}</p>}
+      {message && (
+        <p className={`msg ${message.toLowerCase().includes('welcome') ? '' : 'msg-error'}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }

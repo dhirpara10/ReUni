@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
 import { BACKEND_URL } from '../config';
+
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 const CONDITIONS = ['New', 'Good', 'Fair', 'Worn'];
 const EXCHANGE_TYPES = ['Sell', 'Swap', 'Giveaway'];
@@ -24,7 +25,7 @@ function EditItem() {
 
   const fetchItem = async () => {
     try {
-      const res = await fetch(`{BACKEND_URL}/items/${id}`);
+      const res = await fetch(`${BACKEND_URL}/items/${id}`);
       const data = await res.json();
       if (!res.ok) {
         setMessage(data.error || 'Item not found.');
@@ -105,7 +106,7 @@ function EditItem() {
       };
       if (image_url) body.image_url = image_url;
 
-      const res = await fetch(`{BACKEND_URL}/items/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/items/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -126,65 +127,67 @@ function EditItem() {
     }
   };
 
-  if (loading) return <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>;
-  if (!formData) return <p style={{ textAlign: 'center', marginTop: '40px', color: 'red' }}>{message}</p>;
+  if (loading) return <p className="msg" style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>;
+  if (!formData) return <p className="msg msg-error" style={{ textAlign: 'center', marginTop: '40px' }}>{message}</p>;
 
   return (
-    <div style={{ maxWidth: '500px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div className="page">
       <h2>Edit Item</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '12px' }}>
-          <label>Title</label><br />
-          <input type="text" name="title" value={formData.title} onChange={handleChange} required style={{ width: '100%', padding: '8px' }} />
+      <form onSubmit={handleSubmit} className="card">
+        <div className="field">
+          <label>Title</label>
+          <input type="text" name="title" value={formData.title} onChange={handleChange} required className="input" />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Description</label><br />
-          <textarea name="description" value={formData.description} onChange={handleChange} rows={3} style={{ width: '100%', padding: '8px' }} />
+        <div className="field">
+          <label>Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="input" />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Category</label><br />
-          <select name="category" value={formData.category} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Category</label>
+          <select name="category" value={formData.category} onChange={handleChange} className="input">
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Condition</label><br />
-          <select name="condition" value={formData.condition} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Condition</label>
+          <select name="condition" value={formData.condition} onChange={handleChange} className="input">
             {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Exchange Type</label><br />
-          <select name="exchange_type" value={formData.exchange_type} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Exchange Type</label>
+          <select name="exchange_type" value={formData.exchange_type} onChange={handleChange} className="input">
             {EXCHANGE_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
         {formData.exchange_type === 'Sell' && (
-          <div style={{ marginBottom: '12px' }}>
-            <label>Price ($)</label><br />
-            <input type="number" name="price" value={formData.price} onChange={handleChange} min="0" step="0.01" required style={{ width: '100%', padding: '8px' }} />
+          <div className="field">
+            <label>Price ($)</label>
+            <input type="number" name="price" value={formData.price} onChange={handleChange} min="0" step="0.01" required className="input" />
           </div>
         )}
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Photo</label><br />
+        <div className="field">
+          <label>Photo</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {imagePreview && (
-            <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '8px', borderRadius: '8px' }} />
+            <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '10px', borderRadius: 'var(--radius)' }} />
           )}
         </div>
 
-        <button type="submit" disabled={saving} style={{ padding: '10px 20px' }}>
+        <button type="submit" disabled={saving} className="btn btn-primary">
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '15px' }}>{message}</p>}
+      {message && (
+        <p className={`msg ${message.startsWith('Item updated') ? '' : 'msg-error'}`}>{message}</p>
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import  supabase  from '../supabaseClient';
+import supabase from '../supabaseClient';
 import { BACKEND_URL } from '../config';
+
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 const CONDITIONS = ['New', 'Good', 'Fair', 'Worn'];
 const EXCHANGE_TYPES = ['Sell', 'Swap', 'Giveaway'];
@@ -108,63 +109,63 @@ function PostItem() {
 
   if (!user) {
     return (
-      <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif', textAlign: 'center' }}>
+      <div className="page" style={{ textAlign: 'center' }}>
         <p>You must be logged in to post an item.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '500px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div className="page">
       <h2>Post an Item</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '12px' }}>
-          <label>Title</label><br />
+      <form onSubmit={handleSubmit} className="card">
+        <div className="field">
+          <label>Title</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Description</label><br />
+        <div className="field">
+          <label>Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             rows={3}
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Category</label><br />
-          <select name="category" value={formData.category} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Category</label>
+          <select name="category" value={formData.category} onChange={handleChange} className="input">
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Condition</label><br />
-          <select name="condition" value={formData.condition} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Condition</label>
+          <select name="condition" value={formData.condition} onChange={handleChange} className="input">
             {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Exchange Type</label><br />
-          <select name="exchange_type" value={formData.exchange_type} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+        <div className="field">
+          <label>Exchange Type</label>
+          <select name="exchange_type" value={formData.exchange_type} onChange={handleChange} className="input">
             {EXCHANGE_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
         {formData.exchange_type === 'Sell' && (
-          <div style={{ marginBottom: '12px' }}>
-            <label>Price ($)</label><br />
+          <div className="field">
+            <label>Price ($)</label>
             <input
               type="number"
               name="price"
@@ -173,29 +174,31 @@ function PostItem() {
               min="0"
               step="0.01"
               required
-              style={{ width: '100%', padding: '8px' }}
+              className="input"
             />
           </div>
         )}
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Photo (optional)</label><br />
+        <div className="field">
+          <label>Photo (optional)</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {imagePreview && (
             <img
               src={imagePreview}
               alt="Preview"
-              style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '8px', borderRadius: '8px' }}
+              style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '10px', borderRadius: 'var(--radius)' }}
             />
           )}
         </div>
 
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px' }}>
+        <button type="submit" disabled={loading} className="btn btn-primary">
           {loading ? 'Posting...' : 'Publish'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '15px' }}>{message}</p>}
+      {message && (
+        <p className={`msg ${message.startsWith('Item posted') ? '' : 'msg-error'}`}>{message}</p>
+      )}
     </div>
   );
 }

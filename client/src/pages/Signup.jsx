@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BACKEND_URL } from '../config';
+
 function Signup() {
   const [formData, setFormData] = useState({
     full_name: '',
@@ -41,23 +42,23 @@ function Signup() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+    <div className="page">
       <h2>Create your ReUni account</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '12px' }}>
-          <label>Full Name</label><br />
+      <form onSubmit={handleSubmit} className="card">
+        <div className="field">
+          <label>Full Name</label>
           <input
             type="text"
             name="full_name"
             value={formData.full_name}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>University Email</label><br />
+        <div className="field">
+          <label>University Email</label>
           <input
             type="email"
             name="email"
@@ -65,28 +66,32 @@ function Signup() {
             value={formData.email}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label>Password</label><br />
+        <div className="field">
+          <label>Password</label>
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
             required
-            style={{ width: '100%', padding: '8px' }}
+            className="input"
           />
         </div>
 
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px' }}>
+        <button type="submit" disabled={loading} className="btn btn-primary">
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '15px' }}>{message}</p>}
+      {message && (
+        <p className={`msg ${message.startsWith('Account created') ? '' : 'msg-error'}`}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }
