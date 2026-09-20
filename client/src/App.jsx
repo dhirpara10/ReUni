@@ -6,6 +6,9 @@ import Browse from './pages/Browse';
 import PostItem from './pages/PostItem';
 import ItemDetail from './pages/ItemDetail';
 import Wishlist from './pages/Wishlist';
+import Inbox from './pages/Inbox';
+import MyListings from './pages/MyListings';
+import EditItem from './pages/EditItem';
 
 function Nav() {
   const navigate = useNavigate();
@@ -27,6 +30,7 @@ function Nav() {
       <Link to="/browse" style={{ marginRight: '20px' }}>Browse Items</Link>
       {user && <Link to="/post" style={{ marginRight: '20px' }}>Post Item</Link>}
       {user && <Link to="/wishlist" style={{ marginRight: '20px' }}>Wishlist</Link>}
+      {user && <Link to="/inbox" style={{ marginRight: '20px' }}>Inbox</Link>}
 
       {!user && (
         <>
@@ -34,6 +38,7 @@ function Nav() {
           <Link to="/login">Log In</Link>
         </>
       )}
+      {user && <Link to="/my-listings" style={{ marginRight: '20px' }}>My Listings</Link>}
 
       {user && (
         <>
@@ -56,7 +61,10 @@ function App() {
         <Route path="/post" element={<PostItem />} />
         <Route path="/items/:id" element={<ItemDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/inbox" element={<Inbox />} />
         <Route path="/" element={<Browse />} />
+        <Route path="/my-listings" element={<MyListings />} />
+        <Route path="/items/:id/edit" element={<EditItem />} />
       </Routes>
     </BrowserRouter>
   );

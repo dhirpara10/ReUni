@@ -1,27 +1,54 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import  supabase  from '../supabaseClient';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import supabase from '../supabaseClient';
 
 const CATEGORIES = ['Books', 'Furniture', 'Electronics', 'Stationery', 'Other'];
 const CONDITIONS = ['New', 'Good', 'Fair', 'Worn'];
 const EXCHANGE_TYPES = ['Sell', 'Swap', 'Giveaway'];
 
-function PostItem() {
+function EditItem() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('reuni_user'));
 
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'Books',
-    condition: 'Good',
-    exchange_type: 'Sell',
-    price: ''
-  });
+  const [formData, setFormData] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchItem();
+  }, [id]);
+
+  const fetchItem = async () => {
+    try {
+      const res = await fetch(`http://localhost:5001/items/${id}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage(data.error || 'Item not found.');
+      } else {
+        if (data.item.seller_id !== user?.id) {
+          setMessage('You can only edit your own listings.');
+          return;
+        }
+        setFormData({
+          title: data.item.title,
+          description: data.item.description || '',
+          category: data.item.category,
+          condition: data.item.condition,
+          exchange_type: data.item.exchange_type,
+          price: data.item.price || ''
+        });
+        setImagePreview(data.item.image_url);
+      }
+    } catch (err) {
+      setMessage('Could not reach the server.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,50 +72,43 @@ function PostItem() {
 
     if (uploadError) throw uploadError;
 
-    const { data } = supabase.storage
-      .from('item-images')
-      .getPublicUrl(fileName);
-
+    const { data } = supabase.storage.from('item-images').getPublicUrl(fileName);
     return data.publicUrl;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      setMessage('You must be logged in to post an item.');
-      return;
-    }
-
-    setLoading(true);
+    setSaving(true);
     setMessage('');
 
     try {
-      let image_url = null;
+      let image_url;
 
       if (imageFile) {
         try {
           image_url = await uploadImage();
         } catch (uploadErr) {
-          setMessage('Image upload failed. Try a different image or post without one.');
-          setLoading(false);
+          setMessage('Image upload failed. Try again or keep the existing image.');
+          setSaving(false);
           return;
         }
       }
 
-      const res = await fetch('http://localhost:5001/items', {
-        method: 'POST',
+      const body = {
+        seller_id: user.id,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        condition: formData.condition,
+        exchange_type: formData.exchange_type,
+        price: formData.exchange_type === 'Sell' ? parseFloat(formData.price) : null
+      };
+      if (image_url) body.image_url = image_url;
+
+      const res = await fetch(`http://localhost:5001/items/${id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          seller_id: user.id,
-          title: formData.title,
-          description: formData.description,
-          category: formData.category,
-          condition: formData.condition,
-          exchange_type: formData.exchange_type,
-          price: formData.exchange_type === 'Sell' ? parseFloat(formData.price) : null,
-          image_url
-        })
+        body: JSON.stringify(body)
       });
 
       const data = await res.json();
@@ -96,49 +116,31 @@ function PostItem() {
       if (!res.ok) {
         setMessage(data.error || 'Something went wrong.');
       } else {
-        setMessage('Item posted successfully!');
-        setTimeout(() => navigate('/browse'), 1000);
+        setMessage('Item updated!');
+        setTimeout(() => navigate('/my-listings'), 800);
       }
     } catch (err) {
       setMessage('Could not reach the server.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  if (!user) {
-    return (
-      <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif', textAlign: 'center' }}>
-        <p>You must be logged in to post an item.</p>
-      </div>
-    );
-  }
+  if (loading) return <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>;
+  if (!formData) return <p style={{ textAlign: 'center', marginTop: '40px', color: 'red' }}>{message}</p>;
 
   return (
     <div style={{ maxWidth: '500px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
-      <h2>Post an Item</h2>
+      <h2>Edit Item</h2>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '12px' }}>
           <label>Title</label><br />
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
+          <input type="text" name="title" value={formData.title} onChange={handleChange} required style={{ width: '100%', padding: '8px' }} />
         </div>
 
         <div style={{ marginBottom: '12px' }}>
           <label>Description</label><br />
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-            style={{ width: '100%', padding: '8px' }}
-          />
+          <textarea name="description" value={formData.description} onChange={handleChange} rows={3} style={{ width: '100%', padding: '8px' }} />
         </div>
 
         <div style={{ marginBottom: '12px' }}>
@@ -165,33 +167,20 @@ function PostItem() {
         {formData.exchange_type === 'Sell' && (
           <div style={{ marginBottom: '12px' }}>
             <label>Price ($)</label><br />
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-              style={{ width: '100%', padding: '8px' }}
-            />
+            <input type="number" name="price" value={formData.price} onChange={handleChange} min="0" step="0.01" required style={{ width: '100%', padding: '8px' }} />
           </div>
         )}
 
         <div style={{ marginBottom: '12px' }}>
-          <label>Photo (optional)</label><br />
+          <label>Photo</label><br />
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Preview"
-              style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '8px', borderRadius: '8px' }}
-            />
+            <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '8px', borderRadius: '8px' }} />
           )}
         </div>
 
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px' }}>
-          {loading ? 'Posting...' : 'Publish'}
+        <button type="submit" disabled={saving} style={{ padding: '10px 20px' }}>
+          {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
 
@@ -200,4 +189,4 @@ function PostItem() {
   );
 }
 
-export default PostItem;
+export default EditItem;

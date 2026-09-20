@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import StatusBadge from '../components/StatusBadge';
 
 function ItemDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const withParam = searchParams.get('with');
   const user = JSON.parse(localStorage.getItem('reuni_user'));
 
   const [item, setItem] = useState(null);
@@ -21,14 +25,16 @@ function ItemDetail() {
   }, [id]);
 
   useEffect(() => {
-    if (item && user) {
-      if (isOwnItem) {
-        fetchAllConversationsForSeller();
-      } else {
-        setOtherPartyId(item.seller_id);
-      }
+  if (item && user) {
+    if (withParam) {
+      setOtherPartyId(withParam);
+    } else if (isOwnItem) {
+      fetchAllConversationsForSeller();
+    } else {
+      setOtherPartyId(item.seller_id);
     }
-  }, [item, user]);
+  }
+}, [item, user, withParam]);
 
   useEffect(() => {
     if (item && user && otherPartyId) {
@@ -127,7 +133,22 @@ function ItemDetail() {
   return (
     <div style={{ maxWidth: '600px', margin: '30px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
       <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', marginBottom: '24px' }}>
-        <h2 style={{ marginTop: 0 }}>{item.title}</h2>
+        {item.image_url && (
+          <img
+            src={item.image_url}
+            alt={item.title}
+            style={{
+              width: '100%',
+              maxHeight: '300px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+              marginBottom: '16px'
+            }}
+          />
+        )}
+        <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {item.title} <StatusBadge status={item.status} />
+        </h2>
         <p style={{ color: '#666' }}>{item.category} · {item.condition}</p>
         <p style={{ fontWeight: 'bold', fontSize: '18px' }}>
           {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
@@ -137,6 +158,17 @@ function ItemDetail() {
           Posted by {item.users?.full_name} ({item.users?.email})
         </p>
       </div>
+
+      {user && isOwnItem && (
+        <div style={{ marginBottom: '20px', display: 'flex', gap: '8px' }}>
+          <button onClick={() => navigate(`/items/${item.id}/edit`)} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+            Edit
+          </button>
+          <button onClick={() => navigate('/my-listings')} style={{ padding: '6px 12px', cursor: 'pointer' }}>
+            Manage Listing
+          </button>
+        </div>
+      )}
 
       {!user && <p>Please <a href="/login">log in</a> to message the seller.</p>}
 

@@ -269,6 +269,120 @@ app.get('/items/:id', async (req, res) => {
 
 
 
+// Update an item (edit fields and/or change status) — owner only
+app.patch('/items/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { seller_id, title, description, category, condition, exchange_type, price, image_url, status } = req.body;
+
+    if (!seller_id) {
+      return res.status(400).json({ error: 'seller_id is required to verify ownership.' });
+    }
+
+    // Verify ownership before allowing the update
+    const { data: existingItem, error: fetchError } = await supabase
+      .from('items')
+      .select('seller_id')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingItem) {
+      return res.status(404).json({ error: 'Item not found.' });
+    }
+
+    if (existingItem.seller_id !== seller_id) {
+      return res.status(403).json({ error: 'You can only edit your own listings.' });
+    }
+
+    // Only update fields that were actually sent
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (category !== undefined) updates.category = category;
+    if (condition !== undefined) updates.condition = condition;
+    if (exchange_type !== undefined) updates.exchange_type = exchange_type;
+    if (price !== undefined) updates.price = exchange_type === 'Sell' ? price : null;
+    if (image_url !== undefined) updates.image_url = image_url;
+    if (status !== undefined) updates.status = status;
+
+    const { data: updatedItem, error: updateError } = await supabase
+      .from('items')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    res.status(200).json({ message: 'Item updated.', item: updatedItem });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong.' });
+  }
+});
+
+// Delete an item — owner only
+app.delete('/items/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { seller_id } = req.body;
+
+    if (!seller_id) {
+      return res.status(400).json({ error: 'seller_id is required to verify ownership.' });
+    }
+
+    const { data: existingItem, error: fetchError } = await supabase
+      .from('items')
+      .select('seller_id')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingItem) {
+      return res.status(404).json({ error: 'Item not found.' });
+    }
+
+    if (existingItem.seller_id !== seller_id) {
+      return res.status(403).json({ error: 'You can only delete your own listings.' });
+    }
+
+    const { error: deleteError } = await supabase
+      .from('items')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
+
+    res.status(200).json({ message: 'Item deleted.' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong.' });
+  }
+});
+
+// Get every item a seller has posted, regardless of status — for My Listings
+app.get('/items/seller/:seller_id', async (req, res) => {
+  try {
+    const { seller_id } = req.params;
+
+    const { data, error } = await supabase
+      .from('items')
+      .select('*')
+      .eq('seller_id', seller_id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.status(200).json({ items: data });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong.' });
+  }
+});
+
+
 // Add item to wishlist
 app.post('/wishlist', async (req, res) => {
   try {

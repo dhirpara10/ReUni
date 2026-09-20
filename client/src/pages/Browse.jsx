@@ -73,18 +73,40 @@ function Browse() {
             style={{
               border: '1px solid #ccc',
               borderRadius: '8px',
-              padding: '14px',
+              overflow: 'hidden',
               textDecoration: 'none',
               color: 'inherit',
               display: 'block'
             }}
           >
-            <h4 style={{ margin: '0 0 6px 0' }}>{item.title}</h4>
-            <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#666' }}>{item.category} · {item.condition}</p>
-            <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>
-              {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
-            </p>
-            <p style={{ margin: 0, fontSize: '12px', color: '#999' }}>Posted by {item.users?.full_name}</p>
+            <div style={{
+              width: '100%',
+              height: '140px',
+              backgroundColor: '#f0f0f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              {item.image_url ? (
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <span style={{ fontSize: '12px', color: '#aaa' }}>No image</span>
+              )}
+            </div>
+
+            <div style={{ padding: '14px' }}>
+              <h4 style={{ margin: '0 0 6px 0' }}>{item.title}</h4>
+              <p style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#666' }}>{item.category} · {item.condition}</p>
+              <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>
+                {item.exchange_type === 'Sell' ? `$${item.price}` : item.exchange_type}
+              </p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#999' }}>Posted by {item.users?.full_name}</p>
+            </div>
           </Link>
         ))}
       </div>
