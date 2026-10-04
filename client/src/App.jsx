@@ -9,6 +9,7 @@ import Wishlist from './pages/Wishlist';
 import Inbox from './pages/Inbox';
 import MyListings from './pages/MyListings';
 import EditItem from './pages/EditItem';
+import Home from './pages/Home';
 
 function Nav() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ function App() {
     <BrowserRouter>
       <Nav />
       <Routes>
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/browse" element={<Browse />} />
@@ -81,7 +83,8 @@ function App() {
         <Route path="/items/:id" element={<ItemDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/inbox" element={<Inbox />} />
-        <Route path="/" element={<Browse />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/browse" element={<Browse />} />
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/items/:id/edit" element={<EditItem />} />
       </Routes>

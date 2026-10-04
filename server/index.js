@@ -4,8 +4,8 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const sendVerificationEmail = require('./mailer');
-import env from '../client/src/.env';
-const BACKEND_URL = env.BACKEND_URL;
+
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5001';
 
 
 const app = express();
@@ -66,12 +66,16 @@ app.post('/signup', async (req, res) => {
 
     if (tokenError) throw tokenError;
 
-       // 7. Send verification email
-    const verificationLink = `{BACKEND_URL}/verify?token=${token}`;
-    await sendVerificationEmail(email, verificationLink);
+    const verificationLink = `${BACKEND_URL}/verify?token=${token}`;
 
+    // Respond immediately so the frontend is not blocked by email sending.
     res.status(201).json({
       message: 'Account created. Please check your email to verify your account.'
+    });
+
+    // Fire-and-forget: don't await this before returning the response.
+    sendVerificationEmail(email.toLowerCase(), verificationLink).catch((err) => {
+      console.error('Verification email failed to send:', err);
     });
 
   } catch (err) {
