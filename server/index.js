@@ -17,7 +17,7 @@ const supabase = require('./supabaseClient');
 app.get('/', (req, res) => res.send('ReUni API running'));
 
 // Allowed campus email domain
-const ALLOWED_DOMAIN = '@my.holmes.edu.au';'@gmail.com' // change this to your real domain
+const ALLOWED_DOMAIN = '@my.holmes.edu.au'; // change this to your real domain
 
 app.post('/signup', async (req, res) => {
   try {
